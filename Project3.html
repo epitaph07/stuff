@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Creative Project</title>
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<script>
+	var canvas = document.getElementById("myCanvas");
+	var ctx = canvas.getContext("2d");
+	var x = canvas.width / 2;
+	var y = canvas.height / 2;
+	var leftPressed = false;
+	var upPressed = false;
+	var downPressed = false;
+	var rightPressed = false;
+	
+	var bgReady = false;
+	var bgImage = new Image();
+	bgImage.onload = function() {
+		bgReady = true;
+	};
+	bgImage.src = "./background.png";
+	var background = {
+		height: 920,
+		width: 1024,
+		bgx: 0,
+		bgy: 0
+	};
+
+	var characterReady = false;
+	var characterImage = new Image();
+	characterImage.onload = function() {
+		characterReady = true;
+	};
+	characterImage.src = "./character.png";
+	var character = {
+		speed: 250,
+		charx: 240,
+		chary: 160
+	};
+	var keysDown = {};
+
+	addEventListener("keydown", keyDownHandler, false);
+
+	addEventListener("keyup", keyUpHandler, false);
+
+	function keyDownHandler(e) {
+		if(e.keyCode == 38) {
+			upPressed = true;
+		}
+		else if(e.keyCode == 39) {
+			rightPressed = true;
+		}
+		else if(e.keyCode == 37) {
+			leftPressed = true;
+		}
+		else if(e.keyCode == 40) {
+			downPressed = true;
+		}
+	};
+
+	function keyUpHandler(e) {
+		if(e.keyCode == 38) {
+			upPressed = false;
+		}
+		if(e.keyCode == 39) {
+			rightPressed = false;
+		}
+		if(e.keyCode == 37) {
+			leftPressed = false;
+		}
+		if(e.keyCode == 40) {
+			downPressed = false;
+		}
+	};
+
+	function drawCharacter(modifier) {
+		if (upPressed == true) {
+			if (character.chary > 100) {
+				character.chary -= character.speed * modifier
+			}
+			if (character.chary <= 100) {
+				if (background.bgy < 0) {
+					background.bgy += character.speed * modifier
+				}
+				if (background.bgy >= 0) {
+					if (character.chary > 2) {
+						character.chary -= character.speed * modifier
+					}
+				}
+			}
+		}
+		if (downPressed == true) {
+			if (character.chary < canvas.height - 125) {
+				character.chary += character.speed * modifier
+			}
+			if (character.chary >= canvas.height - 125) {
+				if (background.bgy > canvas.height - background.height) {
+					background.bgy -= character.speed * modifier
+				}
+				if (background.bgy <= canvas.height - background.height) {
+					if (character.chary < canvas.height - 25) {
+						character.chary += character.speed * modifier
+					}
+				}
+			}
+		}
+		if (leftPressed == true) {
+			if (character.charx > 160) {
+				character.charx -= character.speed * modifier
+			}
+			if (character.charx <= 160) {
+				if (background.bgx < 0) {
+					background.bgx += character.speed * modifier
+				}
+				if (background.bgx >= 0) {
+					if (character.charx > -3)  {
+						character.charx -= character.speed * modifier
+					}
+				}
+			}
+		}
+		if (rightPressed == true) {
+			if (character.charx < canvas.width - 182) {
+				character.charx += character.speed * modifier
+			}
+			if (character.charx >= canvas.width - 182) {
+				if (background.bgx > canvas.width - background.width) {
+					background.bgx -= character.speed * modifier
+				}
+				if (background.bgx <= canvas.width - background.width) {
+					if (character.charx < canvas.width - 25) {
+						character.charx += character.speed * modifier
+					}
+				}
+			}
+		}
+	};
+
+	function draw() {
+		drawCharacter();
+	};
+
+	var render = function() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		if (bgReady) {
+   			ctx.drawImage(bgImage, background.bgx, background.bgy);
+  		}
+		if(characterReady) {
+			ctx.drawImage(characterImage, character.charx, character.chary);
+		}
+	};
+
+
+	var main = function () {
+	  var now = Date.now();
+	  var delta = now - then;
+
+	  drawCharacter(delta / 1000);
+	  render();
+
+	  then = now;
+
+
+	  requestAnimationFrame(main);
+	};
+
+	var w = window;
+	requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
+
+	var then = Date.now();
+	main();
+
+</script>
+
+</body>
+</html>
